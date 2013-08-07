@@ -1,0 +1,51 @@
+<html>
+<head>
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #DEDEDE;
+        }
+    </style>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    $(function() {
+        var colors;
+        var ws = new WebSocket("ws://localhost:8888/ws");
+
+        function getCanvas(w, h) {
+            if ($("canvas").length === 0) {
+                $("body").append('<canvas width="' + w + '" height="' + h + '">');
+            }
+            return $("canvas")[0];
+        }
+
+        ws.onmessage = function (evt) {
+            debugger;
+            var data = JSON.parse(evt.data),
+                walkers = data.walkers,
+                canvas = getCanvas(data.canvas.width, data.canvas.height),
+                ctx = canvas.getContext("2d");
+
+            if (typeof colors === 'undefined') {
+                colors = [];
+                for (var i = walkers.length - 1; i >= 0; i--) {
+                    colors[i] = Math.floor(Math.random() * 256).toString(16) +
+                                Math.floor(Math.random() * 256).toString(16) +
+                                Math.floor(Math.random() * 256).toString(16);
+                };
+            }
+            for (var i = walkers.length - 1; i >= 0; i--) {
+                var w = walkers[i];
+                var color = colors[i];
+                ctx.fillStyle = color;
+                ctx.fillRect(w.x, w.y, 1, 1);
+            };
+        };
+    });
+    </script>
+</head>
+<body>
+</body>
+</html>
