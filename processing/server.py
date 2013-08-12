@@ -26,6 +26,74 @@ import tornado.ioloop
 
 root = os.path.dirname(__file__)
 
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('index.html')
+
+class WebsocketHandler(tornado.websocket.WebSocketHandler):
+    def __init__(port, *args, **kwargs):
+        super(Server, self).__init__(*args, **kwargs)
+        context = zmq.Context()
+        self.socket = context.socket(zmq.SUB)
+        self.socket.connect('tcp://localhost:%s' % port)
+        self.socket.setsockopt(zmq.SUBSCRIBE, '')
+        self.connections = []
+
+    def open(self):
+        print 'new connection'
+        self.connections.append(self)
+
+    def on_close(self):
+        self.connections.remove(self)
+        print 'connection closed'
+
+    def on_message(self, message):
+        print 'message received', message
+
+    def on_update(self, message):
+        """Producer update handler
+
+        This method is called everytime a new update is received from the
+        producer.
+        """
+        for connection in self.connections:
+            connection.write_message(message[0])
+
+
+
+class Server(object):
+    def __init__(self, port):
+        self.port
+
+    def __call__(self):
+        stream = ZMQStream(self.socket)
+        stream.on_recv(on_update)
+        application = tornado.web.Application([
+            (r'/ws', WebsocketHandler),
+            (r'/', MainHandler)
+        ])
+
+        application.listen(8888)
+        tornado.ioloop.IOLoop.instance().start()
+
+
+    def on_update(self, message):
+        """Producer update handler
+
+        This method is called everytime a new update is received from the
+        producer.
+        """
+        for connection in self.ws_handler.connections:
+            connection.write_message(message[0])
+
+
+
+
+
+
+
+
+
 def server(port):
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
