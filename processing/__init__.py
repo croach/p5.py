@@ -1,11 +1,15 @@
 from multiprocessing import Process
 import webbrowser
-import json
 import time
 
 import zmq
 
 from .server import server as _server
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 
 class Sketch(object):
