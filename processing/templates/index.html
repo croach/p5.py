@@ -45,7 +45,7 @@
 
         ws.onmessage = function (evt) {
             var data = JSON.parse(evt.data),
-                walkers = data.walkers,
+                walkers = data.objects,
                 canvas = getCanvas(data.canvas.width, data.canvas.height);
             ctx = canvas.getContext("2d");
 

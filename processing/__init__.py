@@ -6,6 +6,8 @@ from .server import SketchProcess, SketchServer
 
 class Sketch(object):
     frame_rate = 10
+    width = 100
+    height = 100
 
     def setup(self):
         pass
@@ -26,3 +28,17 @@ class Sketch(object):
         except KeyboardInterrupt:
             worker.terminate()
             server.terminate()
+
+    @property
+    def frame(self):
+        frame = self._frame
+        frame['canvas'] = {
+            'width': self.width,
+            'height': self.height
+        }
+        return frame
+
+    @frame.setter
+    def frame(self, frame):
+        self._frame = frame
+

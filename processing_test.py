@@ -12,10 +12,8 @@ from random import choice, randint
 from processing import *
 
 
-NUMBER_OF_WALKERS = 100000
-WIDTH = 1250
-HEIGHT = 650
-FRAME_RATE = 100
+NUMBER_OF_WALKERS = 10000
+
 
 class Walker(object):
     def __init__(self, width, height):
@@ -50,15 +48,18 @@ class Walker(object):
 
 
 class RandomWalkers(Sketch):
+    width = 1250
+    height = 650
+    frame_rate = 30
+
     def setup(self):
-        self.walkers = [Walker(WIDTH, HEIGHT) for i in range(NUMBER_OF_WALKERS)]
+        self.walkers = [Walker(self.width, self.height) for i in range(NUMBER_OF_WALKERS)]
 
     def draw(self):
         data = defaultdict(list)
-        data['canvas'] = {'width': WIDTH, 'height': HEIGHT}
         for w in self.walkers:
             w.step()
-            data['walkers'].append(w.position)
+            data['objects'].append(w.position)
         self.frame = data
 
 if __name__ == '__main__':

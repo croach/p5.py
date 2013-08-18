@@ -115,12 +115,10 @@ class SketchApplication(tornado.web.Application):
         self.message_handler = SketchMessageHandler()
         handlers = [
             (r'/ws', WebsocketHandler),
-            (r'/', MainHandler),
-            # (r'/static/(.*)', tornado.web.StaticFileHandler, {"path": JS_DIR}),
+            (r'/', MainHandler)
         ]
         settings = {
             "template_path": os.path.join(TEMPLATE_DIR)
-            # "debug": True,
         }
         super(SketchApplication, self).__init__(handlers, **settings)
 
