@@ -12,21 +12,42 @@
     <script type="text/javascript">
     $(function() {
         var colors;
-        var ws = new WebSocket("ws://localhost:8888/ws");
+        var ws = new WebSocket("ws://localhost:8000/ws");
+        var ctx;
 
         function getCanvas(w, h) {
             if ($("canvas").length === 0) {
-                $("body").append('<canvas width="' + w + '" height="' + h + '">');
+                $("body").append('<canvas width="' + w + 'px" height="' + h + 'px">');
             }
             return $("canvas")[0];
         }
 
+        // function point(x, y) {
+        //     // var canvas = getCanvas(),
+        //     //     ctx = canvas.getContext("2d");
+        //     ctx.beginPath();
+        //     ctx.arc(x, y, 1, 0, 2 * Math.PI);
+        //     ctx.fill();
+        // }
+
+        // function point(x, y) {
+        //     // var canvas = getCanvas(),
+        //     //     ctx = canvas.getContext("2d");
+        //     ctx.beginPath();
+        //     ctx.moveTo(x, y);
+        //     ctx.lineTo(x+1, y+1);
+        //     ctx.stroke();
+        // }
+
+        function point(x, y) {
+            ctx.fillRect(x, y, 1, 1);
+        }
+
         ws.onmessage = function (evt) {
-            debugger;
             var data = JSON.parse(evt.data),
                 walkers = data.walkers,
-                canvas = getCanvas(data.canvas.width, data.canvas.height),
-                ctx = canvas.getContext("2d");
+                canvas = getCanvas(data.canvas.width, data.canvas.height);
+            ctx = canvas.getContext("2d");
 
             if (typeof colors === 'undefined') {
                 colors = [];
@@ -40,7 +61,9 @@
                 var w = walkers[i];
                 var color = colors[i];
                 ctx.fillStyle = color;
-                ctx.fillRect(w.x, w.y, 1, 1);
+                ctx.strokeStyle = color;
+                point(w.x, w.y);
+                // ctx.fillRect(w.x, w.y, 1, 1);
             };
         };
     });

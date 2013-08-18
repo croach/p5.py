@@ -12,9 +12,9 @@ from random import choice, randint
 from processing import *
 
 
-NUMBER_OF_WALKERS = 10000
-WIDTH = 640
-HEIGHT = 360
+NUMBER_OF_WALKERS = 100000
+WIDTH = 1250
+HEIGHT = 650
 FRAME_RATE = 100
 
 class Walker(object):

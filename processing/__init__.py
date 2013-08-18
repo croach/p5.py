@@ -4,7 +4,7 @@ import time
 
 import zmq
 
-from .server import server as _server
+from .server import SketchProcess, SketchServer
 
 try:
     import simplejson as json
@@ -21,29 +21,16 @@ class Sketch(object):
     def draw(self):
         pass
 
-    def run(self):
-        producer = Process(target=self._producer, args=(5556,))
-        server = Process(target=_server, args=(5556,))
-        producer.start()
+    def run(self, port=8000):
+        worker = Process(target=SketchProcess(self))
+        server = Process(target=SketchServer(port))
+        worker.start()
         server.start()
-        webbrowser.open('http://localhost:8888')
+        webbrowser.open('http://localhost:%d' % port)
         print "Press ctrl-c to exit..."
         try:
-            producer.join()
+            worker.join()
             server.join()
         except KeyboardInterrupt:
-            producer.terminate()
+            worker.terminate()
             server.terminate()
-
-    def _producer(self, port):
-        context = zmq.Context()
-        socket = context.socket(zmq.PUB)
-        socket.bind('tcp://*:%s' % port)
-        self.setup()
-        while True:
-            self.draw()
-            # logger.info(dict(data))
-            socket.send(json.dumps(self.frame))
-            time.sleep(1.0/self.frame_rate)
-
-
