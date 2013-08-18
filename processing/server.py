@@ -41,6 +41,7 @@ class SketchProcess(object):
         socket.bind('tcp://*:%s' % ZMQ_PORT)
         self.sketch.setup()
         while True:
+            self.sketch.init_frame()
             self.sketch.draw()
             # logger.info(dict(data))
             socket.send(json.dumps(self.sketch.frame))

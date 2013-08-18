@@ -13,7 +13,6 @@
     $(function() {
         var colors;
         var ws = new WebSocket("ws://localhost:{{ port }}/ws");
-        var ctx;
 
         function getCanvas(w, h) {
             if ($("canvas").length === 0) {
@@ -22,48 +21,39 @@
             return $("canvas")[0];
         }
 
-        // function point(x, y) {
-        //     // var canvas = getCanvas(),
-        //     //     ctx = canvas.getContext("2d");
-        //     ctx.beginPath();
-        //     ctx.arc(x, y, 1, 0, 2 * Math.PI);
-        //     ctx.fill();
-        // }
-
-        // function point(x, y) {
-        //     // var canvas = getCanvas(),
-        //     //     ctx = canvas.getContext("2d");
-        //     ctx.beginPath();
-        //     ctx.moveTo(x, y);
-        //     ctx.lineTo(x+1, y+1);
-        //     ctx.stroke();
-        // }
-
-        function point(x, y) {
-            ctx.fillRect(x, y, 1, 1);
+        function color(r, g, b) {
+            return r.toString(16) + g.toString(16) + b.toString(16);
         }
+
+        var processingFns = {
+            "point": function(x, y) {
+                var ctx = this.getContext("2d");
+                ctx.fillRect(x, y, 1, 1);
+            },
+
+            "background": function(r, g, b) {
+                var ctx = this.getContext("2d"),
+                    prevFillStyle = ctx.fillStyle;
+                ctx.fillStyle = color(r, g, b);
+                ctx.fillRect(0, 0, this.width, this.height);
+                ctx.fillStyle = prevFillStyle;
+            },
+
+            "fill": function(r, g, b) {
+                var ctx = this.getContext("2d");
+                ctx.fillStyle = color(r, g, b);
+            }
+        };
 
         ws.onmessage = function (evt) {
             var data = JSON.parse(evt.data),
-                walkers = data.objects,
-                canvas = getCanvas(data.canvas.width, data.canvas.height);
-            ctx = canvas.getContext("2d");
+                commands = data.commands,
+                canvas = getCanvas(data.canvas.width, data.canvas.height),
+                ctx = canvas.getContext("2d");
 
-            if (typeof colors === 'undefined') {
-                colors = [];
-                for (var i = walkers.length - 1; i >= 0; i--) {
-                    colors[i] = Math.floor(Math.random() * 256).toString(16) +
-                                Math.floor(Math.random() * 256).toString(16) +
-                                Math.floor(Math.random() * 256).toString(16);
-                };
-            }
-            for (var i = walkers.length - 1; i >= 0; i--) {
-                var w = walkers[i];
-                var color = colors[i];
-                ctx.fillStyle = color;
-                ctx.strokeStyle = color;
-                point(w.x, w.y);
-                // ctx.fillRect(w.x, w.y, 1, 1);
+            for (var i = 0; i < commands.length; i++) {
+                var command = commands[i];
+                processingFns[command.name].apply(canvas, command.args);
             };
         };
     });

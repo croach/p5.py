@@ -21,6 +21,7 @@ class Walker(object):
         self.height = height
         self.x = randint(0, self.width)
         self.y = randint(0, self.height)
+        self.color = [randint(0, 255), randint(0, 255), randint(0, 255)]
 
     @property
     def position(self):
@@ -56,11 +57,12 @@ class RandomWalkers(Sketch):
         self.walkers = [Walker(self.width, self.height) for i in range(NUMBER_OF_WALKERS)]
 
     def draw(self):
-        data = defaultdict(list)
+        # self.background(255)
         for w in self.walkers:
             w.step()
-            data['objects'].append(w.position)
-        self.frame = data
+            self.fill(w.color)
+            self.point(w.x, w.y)
+
 
 if __name__ == '__main__':
     sketch = RandomWalkers()
