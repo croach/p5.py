@@ -1,9 +1,6 @@
 import os
 import json
-import sys
 import time
-import webbrowser
-import logging
 
 import zmq
 from zmq.eventloop import ioloop
