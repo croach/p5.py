@@ -20,7 +20,9 @@ class Sketch(object):
         server = Process(target=SketchServer(port))
         worker.start()
         server.start()
-        webbrowser.open_new('http://localhost:%d' % port)
+        url = 'http://localhost:%d' % port
+        webbrowser.open_new(url)
+        print 'Visualialization available on %s' % url
         print "Press ctrl-c to exit..."
         try:
             worker.join()
