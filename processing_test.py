@@ -63,4 +63,4 @@ class RandomWalkers(Sketch):
 
 if __name__ == '__main__':
     sketch = RandomWalkers()
-    sketch.run()
+    sketch.run(port=8888)

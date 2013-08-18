@@ -12,7 +12,7 @@
     <script type="text/javascript">
     $(function() {
         var colors;
-        var ws = new WebSocket("ws://localhost:8000/ws");
+        var ws = new WebSocket("ws://localhost:{{ port }}/ws");
         var ctx;
 
         function getCanvas(w, h) {

@@ -20,8 +20,7 @@ import tornado.ioloop
 #       changed and the html files will need to be installed somewhere in the file system.
 root = os.path.dirname(__file__)
 
-HTML_DIR = os.path.join(root, 'html')
-JS_DIR = os.path.join(HTML_DIR, 'static', 'js')
+TEMPLATE_DIR = os.path.join(root, 'templates')
 
 ZMQ_PORT = 5556
 
@@ -84,7 +83,7 @@ class MainHandler(tornado.web.RequestHandler):
     """Serves the main page (index.html).
     """
     def get(self):
-        self.render('index.html')
+        self.render('index.html', port=self.application.port)
 
 
 class WebsocketHandler(tornado.websocket.WebSocketHandler):
@@ -114,7 +113,8 @@ class SketchApplication(tornado.web.Application):
     handler instances access to the SketchMessageHandler instance so they can
     register their callback methods with it.
     """
-    def __init__(self):
+    def __init__(self, port):
+        self.port = port
         self.message_handler = SketchMessageHandler()
         handlers = [
             (r'/ws', WebsocketHandler),
@@ -122,6 +122,7 @@ class SketchApplication(tornado.web.Application):
             # (r'/static/(.*)', tornado.web.StaticFileHandler, {"path": JS_DIR}),
         ]
         settings = {
+            "template_path": os.path.join(TEMPLATE_DIR)
             # "debug": True,
         }
         super(SketchApplication, self).__init__(handlers, **settings)
@@ -138,6 +139,6 @@ class SketchServer(object):
         self.port = port
 
     def __call__(self):
-        application = SketchApplication()
+        application = SketchApplication(self.port)
         application.listen(self.port)
         tornado.ioloop.IOLoop.instance().start()

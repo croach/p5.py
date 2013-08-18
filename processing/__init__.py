@@ -26,7 +26,7 @@ class Sketch(object):
         server = Process(target=SketchServer(port))
         worker.start()
         server.start()
-        webbrowser.open('http://localhost:%d' % port)
+        webbrowser.open_new('http://localhost:%d' % port)
         print "Press ctrl-c to exit..."
         try:
             worker.join()
