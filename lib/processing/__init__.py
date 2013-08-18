@@ -5,7 +5,7 @@ from .server import SketchProcess, SketchServer
 
 
 class Sketch(object):
-    frame_rate = 10
+    frame_rate = 60
     width = 100
     height = 100
 
