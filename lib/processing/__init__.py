@@ -1,70 +1,51 @@
-from multiprocessing import Process
-import webbrowser
+import types
+from functools import wraps
 
-from .server import SketchProcess, SketchServer
+from .sketch import Sketch
 
 
-class Sketch(object):
-    frame_rate = 60
-    width = 100
-    height = 100
+# TODO: Add an __all__ variable to make sure everything doesn't get imported
+#       when the user does an import *
 
-    def setup(self):
-        pass
+# Adding global variables to the __builtin__ module
+import __builtin__
+__builtin__.width = 100
+__builtin__.height = 100
 
-    def draw(self):
-        pass
+_sketch = Sketch()
 
-    def run(self, port=8000):
-        worker = Process(target=SketchProcess(self))
-        server = Process(target=SketchServer(port))
-        worker.start()
-        server.start()
-        url = 'http://localhost:%d' % port
-        webbrowser.open_new(url)
-        print 'Visualialization available on %s' % url
-        print "Press ctrl-c to exit..."
-        try:
-            worker.join()
-            server.join()
-        except KeyboardInterrupt:
-            worker.terminate()
-            server.terminate()
+# TODO: Replace these methods with something a bit more dynamic
+def point(x, y):
+    _sketch.point(x, y)
 
-    def init_frame(self):
-        self._frame = {}
+def background(color):
+    _sketch.background(color)
 
-    def point(self, x, y):
-        cmd = {'name': 'point', 'args': [x, y]}
-        self.frame.setdefault('commands', []).append(cmd)
+def fill(color):
+    _sketch.fill(color)
 
-    def background(self, color):
-        try:
-            r, g, b = color
-        except TypeError:
-            r, g, b = [color]*3
-        cmd = {'name': 'background', 'args': [r, g, b]}
-        self.frame.setdefault('commands', []).append(cmd)
+def size(width, height):
+    __builtin__.width = _sketch.width = width
+    __builtin__.height = _sketch.height = height
 
-    def fill(self, color):
-        try:
-            r, g, b = color
-        except TypeError:
-            r, g, b = [color]*3
-        cmd = {'name': 'fill', 'args': [r, g, b]}
-        self.frame.setdefault('commands', []).append(cmd)
+def _bind(fn, obj):
+    """Turns a function into a bound method and adds it to the given object.
+    """
+    @wraps(fn)
+    def method(self, *args, **kwargs):
+        return fn(*args, **kwargs)
 
-    @property
-    def frame(self):
-        self._frame.update({
-            'canvas': {
-                'width': self.width,
-                'height': self.height
-            }
-        })
-        return self._frame
+    bound_method = types.MethodType(method, obj, obj.__class__)
+    setattr(obj, bound_method.__name__, bound_method)
 
-    @frame.setter
-    def frame(self, frame):
-        self._frame = frame
+def run():
+    import __main__
+    main_globals = dir(__main__)
 
+    # TODO: Replace this with something a bit more dynamic
+    if 'setup' in main_globals:
+        _bind(__main__.setup, _sketch)
+    if 'draw' in main_globals:
+        _bind(__main__.draw, _sketch)
+
+    _sketch.run()
