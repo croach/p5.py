@@ -48,20 +48,31 @@ class Sketch(object):
         self.frame.setdefault('commands', []).append(cmd)
 
     def background(self, color):
-        try:
-            r, g, b = color
-        except TypeError:
-            r, g, b = [color]*3
+        r, g, b = self._parse_color(color)
         cmd = {'name': 'background', 'args': [r, g, b]}
         self.frame.setdefault('commands', []).append(cmd)
 
     def fill(self, color):
+        r, g, b = self._parse_color(color)
+        cmd = {'name': 'fill', 'args': [r, g, b]}
+        self.frame.setdefault('commands', []).append(cmd)
+
+    def stroke(self, color):
+        r, g, b = self._parse_color(color)        
+        cmd = {'name': 'stroke', 'args': [r, g, b]}
+        self.frame.setdefault('commands', []).append(cmd)
+
+    def rect(self, x, y, width, height):
+        cmd = {'name': 'rect', 'args': [x, y, width, height]}
+        self.frame.setdefault('commands', []).append(cmd)
+
+    def _parse_color(self, color):
         try:
             r, g, b = color
         except TypeError:
             r, g, b = [color]*3
-        cmd = {'name': 'fill', 'args': [r, g, b]}
-        self.frame.setdefault('commands', []).append(cmd)
+        return r, g, b
+
 
     @property
     def frame(self):

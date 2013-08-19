@@ -24,6 +24,12 @@ def background(color):
 def fill(color):
     _sketch.fill(color)
 
+def stroke(color):
+    _sketch.stroke(color)
+
+def rect(x, y, w, h):
+    _sketch.rect(x, y, w, h)
+
 def size(width, height):
     __builtin__.width = _sketch.width = width
     __builtin__.height = _sketch.height = height

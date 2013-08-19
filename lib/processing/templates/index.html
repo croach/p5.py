@@ -42,7 +42,19 @@
             "fill": function(r, g, b) {
                 var ctx = this.getContext("2d");
                 ctx.fillStyle = color(r, g, b);
-            }
+            },
+
+            "stroke": function(r, g, b) {
+                var ctx = this.getContext("2d");
+                ctx.strokeStyle = color(r, g, b);
+            },
+
+            "rect": function(x, y, width, height) {
+                var ctx = this.getContext("2d");
+		        ctx.strokeRect(x, y, width, height);
+                ctx.fillRect(x, y, width, height);
+            },		
+
         };
 
         ws.onmessage = function (evt) {
