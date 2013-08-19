@@ -40,6 +40,12 @@ class SketchProcess(object):
         socket = context.socket(zmq.PUB)
         socket.bind('tcp://*:%s' % ZMQ_PORT)
         self.sketch.setup()
+        # TODO: Currently I sleep for a second before starting the simulation
+        #       that way the browser window (hopefully) has enough time to open
+        #       before the simulation is underway. In the future it would be
+        #       better to not start the simulation until at least one client
+        #       has connected.
+        time.sleep(1)
         while True:
             self.sketch.init_frame()
             self.sketch.draw()
