@@ -32,9 +32,15 @@ class Sketch(object):
             server.terminate()
 
     def __init__(self):
-        self.init_frame()
+        self.reset()
 
-    def init_frame(self):
+    def reset(self):
+        """Resets the state of the system (i.e., the current frame dict).
+
+        This method is meant to be called between calls to the draw method
+        as a means of clearing the current frame. The frame is the set of 
+        commands to be sent to the client for drawing the current frame.
+        """
         self._frame = {}
 
     def point(self, x, y):

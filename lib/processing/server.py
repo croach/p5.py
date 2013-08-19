@@ -47,10 +47,11 @@ class SketchProcess(object):
         #       has connected.
         time.sleep(1)
         while True:
-            self.sketch.init_frame()
+            # TODO: Consider doing something where draw actually returnst the
+            #       frame and resets it so we don't have to call reset below.
             self.sketch.draw()
-            # logger.info(dict(data))
             socket.send(json.dumps(self.sketch.frame))
+            self.sketch.reset()
             time.sleep(1.0/self.sketch.frame_rate)
 
 
