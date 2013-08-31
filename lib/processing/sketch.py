@@ -4,6 +4,12 @@ import webbrowser
 from .server import SketchProcess, SketchServer
 
 
+def foo(func):
+
+    def wrapper(*args, **kwargs):
+        cmd = {'name': 'background', 'args': [r, g, b]}
+        self.frame.setdefault('commands', []).append(cmd)
+
 class Sketch(object):
     frame_rate = 60
     width = 100
@@ -21,7 +27,7 @@ class Sketch(object):
         worker.start()
         server.start()
         url = 'http://localhost:%d' % port
-        webbrowser.open_new(url)
+        webbrowser.open(url)
         print 'Visualialization available on %s' % url
         print "Press ctrl-c to exit..."
         try:
@@ -38,7 +44,7 @@ class Sketch(object):
         """Resets the state of the system (i.e., the current frame dict).
 
         This method is meant to be called between calls to the draw method
-        as a means of clearing the current frame. The frame is the set of 
+        as a means of clearing the current frame. The frame is the set of
         commands to be sent to the client for drawing the current frame.
         """
         self._frame = {}
@@ -58,7 +64,7 @@ class Sketch(object):
         self.frame.setdefault('commands', []).append(cmd)
 
     def stroke(self, color):
-        r, g, b = self._parse_color(color)        
+        r, g, b = self._parse_color(color)
         cmd = {'name': 'stroke', 'args': [r, g, b]}
         self.frame.setdefault('commands', []).append(cmd)
 
