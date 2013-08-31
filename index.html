@@ -1,0 +1,882 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Processing.py by croach</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Processing.py</h1>
+        <p>A python-based implementation of the Processing visualization language that runs in the browser</p>
+
+        <p class="view"><a href="https://github.com/croach/processing.py">View the Project on GitHub <small>croach/processing.py</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/croach/processing.py/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/croach/processing.py/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/croach/processing.py">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>
+<a name="processingjs-instructions" class="anchor" href="#processingjs-instructions"><span class="octicon octicon-link"></span></a>Processing.js instructions</h2>
+
+<p><a href="https://github.com/pjs" class="user-mention">@pjs</a> directives</p>
+
+<p>font</p>
+
+<p>globalKeyEvents</p>
+
+<p>pauseOnBlur</p>
+
+<p>preload</p>
+
+<h2>
+<a name="structure" class="anchor" href="#structure"><span class="octicon octicon-link"></span></a>Structure</h2>
+
+<p><a href="array%20access"></a></p>
+
+<p>= (assign)</p>
+
+<p>class</p>
+
+<p>, (comma)</p>
+
+<p>// (comment)</p>
+
+<p>{} (curly braces)</p>
+
+<p>/** */ (doc comment)</p>
+
+<p>. (dot)</p>
+
+<p>draw()</p>
+
+<p>exit()</p>
+
+<p>extends</p>
+
+<p>false</p>
+
+<p>final</p>
+
+<p>implements</p>
+
+<p>import</p>
+
+<p>loop()</p>
+
+<p>/* */ (multiline comment)</p>
+
+<p>new</p>
+
+<p>noLoop()</p>
+
+<p>null</p>
+
+<p>() (parentheses)</p>
+
+<p>popStyle()</p>
+
+<p>private</p>
+
+<p>public</p>
+
+<p>pushStyle()</p>
+
+<p>redraw()</p>
+
+<p>return</p>
+
+<p>; (semicolon)</p>
+
+<p>setup()</p>
+
+<p>size()</p>
+
+<p>static</p>
+
+<p>super</p>
+
+<p>this</p>
+
+<p>true</p>
+
+<p>void</p>
+
+<h2>
+<a name="environment" class="anchor" href="#environment"><span class="octicon octicon-link"></span></a>Environment</h2>
+
+<p>cursor()</p>
+
+<p>focused</p>
+
+<p>frameCount</p>
+
+<p>frameRate()</p>
+
+<p>frameRate</p>
+
+<p>height</p>
+
+<p>noCursor()</p>
+
+<p>online</p>
+
+<p>screen</p>
+
+<p>width</p>
+
+<h2>
+<a name="data" class="anchor" href="#data"><span class="octicon octicon-link"></span></a>Data</h2>
+
+<h3>
+<a name="primitive" class="anchor" href="#primitive"><span class="octicon octicon-link"></span></a>Primitive</h3>
+
+<p>boolean</p>
+
+<p>byte</p>
+
+<p>char</p>
+
+<p>color</p>
+
+<p>double</p>
+
+<p>float</p>
+
+<p>int</p>
+
+<p>long</p>
+
+<h3>
+<a name="composite" class="anchor" href="#composite"><span class="octicon octicon-link"></span></a>Composite</h3>
+
+<p>Array</p>
+
+<p>ArrayList</p>
+
+<p>HashMap</p>
+
+<p>Object</p>
+
+<p>String</p>
+
+<p>XMLElement</p>
+
+<h3>
+<a name="conversion" class="anchor" href="#conversion"><span class="octicon octicon-link"></span></a>Conversion</h3>
+
+<p>binary()</p>
+
+<p>boolean()</p>
+
+<p>byte()</p>
+
+<p>char()</p>
+
+<p>float()</p>
+
+<p>hex()</p>
+
+<p>int()</p>
+
+<p>str()</p>
+
+<p>unbinary()</p>
+
+<p>unhex()</p>
+
+<h3>
+<a name="string-functions" class="anchor" href="#string-functions"><span class="octicon octicon-link"></span></a>String Functions</h3>
+
+<p>join()</p>
+
+<p>match()</p>
+
+<p>matchAll()</p>
+
+<p>nf()</p>
+
+<p>nfc()</p>
+
+<p>nfp()</p>
+
+<p>nfs()</p>
+
+<p>split()</p>
+
+<p>splitTokens()</p>
+
+<p>trim()</p>
+
+<h3>
+<a name="array-functions" class="anchor" href="#array-functions"><span class="octicon octicon-link"></span></a>Array Functions</h3>
+
+<p>append()</p>
+
+<p>arrayCopy()</p>
+
+<p>concat()</p>
+
+<p>expand()</p>
+
+<p>reverse()</p>
+
+<p>shorten()</p>
+
+<p>sort()</p>
+
+<p>splice()</p>
+
+<p>subset()</p>
+
+<h2>
+<a name="control" class="anchor" href="#control"><span class="octicon octicon-link"></span></a>Control</h2>
+
+<h3>
+<a name="relational-operators" class="anchor" href="#relational-operators"><span class="octicon octicon-link"></span></a>Relational Operators</h3>
+
+<p>== (equality)</p>
+
+<blockquote>
+<p>(greater than)</p>
+
+<p>= (greater than or equal to)</p>
+</blockquote>
+
+<p>!= (inequality)</p>
+
+<p>&lt; (less than)</p>
+
+<p>&lt;= (less than or equal to)</p>
+
+<h3>
+<a name="iteration" class="anchor" href="#iteration"><span class="octicon octicon-link"></span></a>Iteration</h3>
+
+<p>for()</p>
+
+<p>while()</p>
+
+<h3>
+<a name="conditionals" class="anchor" href="#conditionals"><span class="octicon octicon-link"></span></a>Conditionals</h3>
+
+<p>break</p>
+
+<p>case</p>
+
+<p>?: (conditional)</p>
+
+<p>continue</p>
+
+<p>default</p>
+
+<p>else()</p>
+
+<p>if()</p>
+
+<p>switch()</p>
+
+<h3>
+<a name="logical-operators" class="anchor" href="#logical-operators"><span class="octicon octicon-link"></span></a>Logical Operators</h3>
+
+<p>&amp;&amp; (logical AND)</p>
+
+<p>! (logical NOT)</p>
+
+<p>|| (logical OR)</p>
+
+<h2>
+<a name="shape" class="anchor" href="#shape"><span class="octicon octicon-link"></span></a>Shape</h2>
+
+<p>PShape</p>
+
+<h3>
+<a name="2d-primitives" class="anchor" href="#2d-primitives"><span class="octicon octicon-link"></span></a>2D Primitives</h3>
+
+<p>arc()</p>
+
+<p>ellipse()</p>
+
+<p>line()</p>
+
+<p>point()</p>
+
+<p>quad()</p>
+
+<p>rect()</p>
+
+<p>triangle()</p>
+
+<h3>
+<a name="curves" class="anchor" href="#curves"><span class="octicon octicon-link"></span></a>Curves</h3>
+
+<p>bezier()</p>
+
+<p>bezierDetail()</p>
+
+<p>bezierPoint()</p>
+
+<p>bezierTangent()</p>
+
+<p>curve()</p>
+
+<p>curveDetail()</p>
+
+<p>curvePoint()</p>
+
+<p>curveTangent()</p>
+
+<p>curveTightness()</p>
+
+<h3>
+<a name="3d-primitives" class="anchor" href="#3d-primitives"><span class="octicon octicon-link"></span></a>3D Primitives</h3>
+
+<p>box()</p>
+
+<p>sphere()</p>
+
+<p>sphereDetail()</p>
+
+<h3>
+<a name="attributes" class="anchor" href="#attributes"><span class="octicon octicon-link"></span></a>Attributes</h3>
+
+<p>ellipseMode()</p>
+
+<p>noSmooth()</p>
+
+<p>rectMode()</p>
+
+<p>smooth()</p>
+
+<p>strokeCap()</p>
+
+<p>strokeJoin()</p>
+
+<p>strokeWeight()</p>
+
+<h3>
+<a name="vertex" class="anchor" href="#vertex"><span class="octicon octicon-link"></span></a>Vertex</h3>
+
+<p>beginShape()</p>
+
+<p>bezierVertex()</p>
+
+<p>curveVertex()</p>
+
+<p>endShape()</p>
+
+<p>texture()</p>
+
+<p>textureMode()</p>
+
+<p>vertex()</p>
+
+<h3>
+<a name="loading--displaying" class="anchor" href="#loading--displaying"><span class="octicon octicon-link"></span></a>Loading &amp; Displaying</h3>
+
+<p>loadShape()</p>
+
+<p>shape()</p>
+
+<p>shapeMode()  </p>
+
+<h2>
+<a name="input" class="anchor" href="#input"><span class="octicon octicon-link"></span></a>Input</h2>
+
+<h3>
+<a name="mouse" class="anchor" href="#mouse"><span class="octicon octicon-link"></span></a>Mouse</h3>
+
+<p>mouseButton</p>
+
+<p>mouseClicked()</p>
+
+<p>mouseDragged()</p>
+
+<p>mouseMoved()</p>
+
+<p>mouseOut()</p>
+
+<p>mouseOver()</p>
+
+<p>mousePressed()</p>
+
+<p>mousePressed</p>
+
+<p>mouseReleased()</p>
+
+<p>mouseX</p>
+
+<p>mouseY</p>
+
+<p>pmouseX</p>
+
+<p>pmouseY</p>
+
+<h3>
+<a name="keyboard" class="anchor" href="#keyboard"><span class="octicon octicon-link"></span></a>Keyboard</h3>
+
+<p>key</p>
+
+<p>keyCode</p>
+
+<p>keyPressed()</p>
+
+<p>keyPressed</p>
+
+<p>keyReleased()</p>
+
+<p>keyTyped()</p>
+
+<h3>
+<a name="files" class="anchor" href="#files"><span class="octicon octicon-link"></span></a>Files</h3>
+
+<p>createInput() </p>
+
+<p>loadBytes()</p>
+
+<p>loadStrings()</p>
+
+<p>open()</p>
+
+<p>selectFolder()</p>
+
+<p>selectInput()</p>
+
+<h3>
+<a name="web" class="anchor" href="#web"><span class="octicon octicon-link"></span></a>Web</h3>
+
+<p>link()</p>
+
+<p>param()</p>
+
+<p>status()</p>
+
+<h3>
+<a name="time--date" class="anchor" href="#time--date"><span class="octicon octicon-link"></span></a>Time &amp; Date</h3>
+
+<p>day()</p>
+
+<p>hour()</p>
+
+<p>millis()</p>
+
+<p>minute()</p>
+
+<p>month()</p>
+
+<p>second()</p>
+
+<p>year()</p>
+
+<h2>
+<a name="output" class="anchor" href="#output"><span class="octicon octicon-link"></span></a>Output</h2>
+
+<h3>
+<a name="text-area" class="anchor" href="#text-area"><span class="octicon octicon-link"></span></a>Text Area</h3>
+
+<p>print()</p>
+
+<p>println()</p>
+
+<h3>
+<a name="image" class="anchor" href="#image"><span class="octicon octicon-link"></span></a>Image</h3>
+
+<p>save()</p>
+
+<p>saveFrame()</p>
+
+<h3>
+<a name="files-1" class="anchor" href="#files-1"><span class="octicon octicon-link"></span></a>Files</h3>
+
+<p>PrintWriter</p>
+
+<p>beginRaw()</p>
+
+<p>beginRecord()</p>
+
+<p>createOutput()    </p>
+
+<p>createReader()</p>
+
+<p>createWriter()</p>
+
+<p>endRaw()</p>
+
+<p>endRecord()</p>
+
+<p>saveBytes()</p>
+
+<p>saveStream() </p>
+
+<p>saveStrings()</p>
+
+<p>selectOutput()</p>
+
+<h2>
+<a name="transform" class="anchor" href="#transform"><span class="octicon octicon-link"></span></a>Transform</h2>
+
+<p>applyMatrix()</p>
+
+<p>popMatrix()</p>
+
+<p>printMatrix()</p>
+
+<p>pushMatrix()</p>
+
+<p>resetMatrix()</p>
+
+<p>rotate()</p>
+
+<p>rotateX()</p>
+
+<p>rotateY()</p>
+
+<p>rotateZ()</p>
+
+<p>scale()</p>
+
+<p>translate()</p>
+
+<h2>
+<a name="lights-camera" class="anchor" href="#lights-camera"><span class="octicon octicon-link"></span></a>Lights, Camera</h2>
+
+<h3>
+<a name="lights" class="anchor" href="#lights"><span class="octicon octicon-link"></span></a>Lights</h3>
+
+<p>ambientLight()</p>
+
+<p>directionalLight()</p>
+
+<p>lightFalloff()</p>
+
+<p>lightSpecular()</p>
+
+<p>lights()</p>
+
+<p>noLights()</p>
+
+<p>normal()</p>
+
+<p>pointLight()</p>
+
+<p>spotLight()</p>
+
+<h3>
+<a name="camera" class="anchor" href="#camera"><span class="octicon octicon-link"></span></a>Camera</h3>
+
+<p>beginCamera()</p>
+
+<p>camera()</p>
+
+<p>endCamera()</p>
+
+<p>frustum()</p>
+
+<p>ortho()</p>
+
+<p>perspective()</p>
+
+<p>printCamera()</p>
+
+<p>printProjection()</p>
+
+<h3>
+<a name="coordinates" class="anchor" href="#coordinates"><span class="octicon octicon-link"></span></a>Coordinates</h3>
+
+<p>modelX()</p>
+
+<p>modelY()</p>
+
+<p>modelZ()</p>
+
+<p>screenX()</p>
+
+<p>screenY()</p>
+
+<p>screenZ()</p>
+
+<h3>
+<a name="material-properties" class="anchor" href="#material-properties"><span class="octicon octicon-link"></span></a>Material Properties</h3>
+
+<p>ambient()</p>
+
+<p>emissive()</p>
+
+<p>shininess()</p>
+
+<p>specular()</p>
+
+<h2>
+<a name="color" class="anchor" href="#color"><span class="octicon octicon-link"></span></a>Color</h2>
+
+<h3>
+<a name="setting" class="anchor" href="#setting"><span class="octicon octicon-link"></span></a>Setting</h3>
+
+<p>background()</p>
+
+<p>colorMode()</p>
+
+<p>fill()</p>
+
+<p>noFill()</p>
+
+<p>noStroke()</p>
+
+<p>stroke()</p>
+
+<h3>
+<a name="creating--reading" class="anchor" href="#creating--reading"><span class="octicon octicon-link"></span></a>Creating &amp; Reading</h3>
+
+<p>alpha()</p>
+
+<p>blendColor()</p>
+
+<p>blue()</p>
+
+<p>brightness()</p>
+
+<p>color()</p>
+
+<p>green()</p>
+
+<p>hue()</p>
+
+<p>lerpColor()</p>
+
+<p>red()</p>
+
+<p>saturation()</p>
+
+<h2>
+<a name="image-1" class="anchor" href="#image-1"><span class="octicon octicon-link"></span></a>Image</h2>
+
+<p>PImage</p>
+
+<p>createImage()</p>
+
+<h3>
+<a name="loading--displaying-1" class="anchor" href="#loading--displaying-1"><span class="octicon octicon-link"></span></a>Loading &amp; Displaying</h3>
+
+<p>image()</p>
+
+<p>imageMode()</p>
+
+<p>loadImage()</p>
+
+<p>noTint()</p>
+
+<p>requestImage()</p>
+
+<p>tint()</p>
+
+<h3>
+<a name="pixels" class="anchor" href="#pixels"><span class="octicon octicon-link"></span></a>Pixels</h3>
+
+<p>blend()</p>
+
+<p>copy()</p>
+
+<p>filter()</p>
+
+<p>get()</p>
+
+<p>loadPixels()</p>
+
+<p>pixels[]</p>
+
+<p>set()</p>
+
+<p>updatePixels()</p>
+
+<h2>
+<a name="rendering" class="anchor" href="#rendering"><span class="octicon octicon-link"></span></a>Rendering</h2>
+
+<p>PGraphics</p>
+
+<p>createGraphics()</p>
+
+<p>hint()</p>
+
+<h2>
+<a name="typography" class="anchor" href="#typography"><span class="octicon octicon-link"></span></a>Typography</h2>
+
+<p>PFont</p>
+
+<h3>
+<a name="loading--displaying-2" class="anchor" href="#loading--displaying-2"><span class="octicon octicon-link"></span></a>Loading &amp; Displaying</h3>
+
+<p>createFont()</p>
+
+<p>loadFont()</p>
+
+<p>text()</p>
+
+<p>textFont()</p>
+
+<h3>
+<a name="attributes-1" class="anchor" href="#attributes-1"><span class="octicon octicon-link"></span></a>Attributes</h3>
+
+<p>textAlign()</p>
+
+<p>textLeading()</p>
+
+<p>textMode()</p>
+
+<p>textSize()</p>
+
+<p>textWidth()</p>
+
+<h3>
+<a name="metrics" class="anchor" href="#metrics"><span class="octicon octicon-link"></span></a>Metrics</h3>
+
+<p>textAscent()</p>
+
+<p>textDescent()</p>
+
+<h2>
+<a name="math" class="anchor" href="#math"><span class="octicon octicon-link"></span></a>Math</h2>
+
+<p>PVector</p>
+
+<h3>
+<a name="operators" class="anchor" href="#operators"><span class="octicon octicon-link"></span></a>Operators</h3>
+
+<p>+= (add assign)</p>
+
+<ul>
+<li>(addition)</li>
+</ul><p>-- (decrement)</p>
+
+<p>/ (divide)</p>
+
+<p>/= (divide assign)</p>
+
+<p>++ (increment)</p>
+
+<ul>
+<li>(minus)</li>
+</ul><p>% (modulo)</p>
+
+<ul>
+<li>(multiply)</li>
+</ul><p>*= (multiply assign)</p>
+
+<p>-= (subtract assign)</p>
+
+<h3>
+<a name="bitwise-operators" class="anchor" href="#bitwise-operators"><span class="octicon octicon-link"></span></a>Bitwise Operators</h3>
+
+<p>&amp; (bitwise AND)</p>
+
+<p>| (bitwise OR)</p>
+
+<p>&lt;&lt; (left shift)</p>
+
+<blockquote>
+<blockquote>
+<p>(right shift)</p>
+</blockquote>
+</blockquote>
+
+<h3>
+<a name="calculation" class="anchor" href="#calculation"><span class="octicon octicon-link"></span></a>Calculation</h3>
+
+<p>abs()</p>
+
+<p>ceil()</p>
+
+<p>constrain()</p>
+
+<p>dist()</p>
+
+<p>exp()</p>
+
+<p>floor()</p>
+
+<p>lerp()</p>
+
+<p>log()</p>
+
+<p>mag()</p>
+
+<p>map()</p>
+
+<p>max()</p>
+
+<p>min()</p>
+
+<p>norm()</p>
+
+<p>pow()</p>
+
+<p>round()</p>
+
+<p>sq()</p>
+
+<p>sqrt()</p>
+
+<h3>
+<a name="trigonometry" class="anchor" href="#trigonometry"><span class="octicon octicon-link"></span></a>Trigonometry</h3>
+
+<p>acos()</p>
+
+<p>asin()</p>
+
+<p>atan()</p>
+
+<p>atan2()</p>
+
+<p>cos()</p>
+
+<p>degrees()</p>
+
+<p>radians()</p>
+
+<p>sin()</p>
+
+<p>tan()</p>
+
+<h3>
+<a name="random" class="anchor" href="#random"><span class="octicon octicon-link"></span></a>Random</h3>
+
+<p>noise()</p>
+
+<p>noiseDetail()</p>
+
+<p>noiseSeed()</p>
+
+<p>random()</p>
+
+<p>randomSeed()</p>
+
+<h2>
+<a name="constants" class="anchor" href="#constants"><span class="octicon octicon-link"></span></a>Constants</h2>
+
+<p>HALF_PI (1.57079...)</p>
+
+<p>PI (3.14159...)</p>
+
+<p>QUARTER_PI (0.78539...)</p>
+
+<p>TWO_PI (6.28318...)</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/croach">croach</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
