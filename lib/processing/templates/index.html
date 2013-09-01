@@ -53,11 +53,16 @@
                 ctx.strokeStyle = color(r, g, b);
             },
 
+            "strokeWeight": function(weight) {
+                var ctx = this.getContext("2d");
+                ctx.lineWidth = weight;
+            },
+
             "rect": function(x, y, width, height) {
                 var ctx = this.getContext("2d");
 		        ctx.strokeRect(x, y, width, height);
                 ctx.fillRect(x, y, width, height);
-            },		
+            },
 
         };
 

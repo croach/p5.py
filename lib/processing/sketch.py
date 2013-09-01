@@ -80,6 +80,10 @@ class Sketch(object):
         return self._parse_color(color)
 
     @processing_function
+    def stroke_weight(self, weight):
+        return [weight]
+
+    @processing_function
     def rect(self, x, y, width, height):
         return [x, y, width, height]
 
