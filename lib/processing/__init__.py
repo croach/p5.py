@@ -14,25 +14,16 @@ __builtin__.height = 100
 
 _sketch = Sketch()
 
-# TODO: Replace these methods with something a bit more dynamic
-def point(x, y):
-    _sketch.point(x, y)
+# Add the processing functions to the current module
+self = __import__(__name__)
+for func in _sketch.processing_functions:
+    setattr(self, func.processing_name, func)
 
-def background(color):
-    _sketch.background(color)
-
-def fill(color):
-    _sketch.fill(color)
-
-def stroke(color):
-    _sketch.stroke(color)
-
-def rect(x, y, w, h):
-    _sketch.rect(x, y, w, h)
 
 def size(width, height):
     __builtin__.width = _sketch.width = width
     __builtin__.height = _sketch.height = height
+
 
 def _bind(fn, obj):
     """Turns a function into a bound method and adds it to the given object.

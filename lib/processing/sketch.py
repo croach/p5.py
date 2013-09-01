@@ -1,14 +1,28 @@
+from functools import wraps
 from multiprocessing import Process
 import webbrowser
 
 from .server import SketchProcess, SketchServer
 
 
-def foo(func):
+def processing_function(func):
+    # Camel case the name to match the Processing naming conventions
+    processing_name = ''.join(func.__name__.split('_')[:1] + [s.capitalize() for s in func.__name__.split('_')[1:]])
 
-    def wrapper(*args, **kwargs):
-        cmd = {'name': 'background', 'args': [r, g, b]}
+    # Create a wrapper function that gets the returned args from the real
+    # function and creates a new command dict and adds it to the frame queue.
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        cmd = {
+            'name': processing_name,
+            'args': func(self, *args, **kwargs)
+        }
         self.frame.setdefault('commands', []).append(cmd)
+
+    # Mark the method as a Processing function by adding its counterparts name
+    wrapper.processing_name = processing_name
+    return wrapper
+
 
 class Sketch(object):
     frame_rate = 60
@@ -49,28 +63,25 @@ class Sketch(object):
         """
         self._frame = {}
 
+    @processing_function
     def point(self, x, y):
-        cmd = {'name': 'point', 'args': [x, y]}
-        self.frame.setdefault('commands', []).append(cmd)
+        return [x, y]
 
+    @processing_function
     def background(self, color):
-        r, g, b = self._parse_color(color)
-        cmd = {'name': 'background', 'args': [r, g, b]}
-        self.frame.setdefault('commands', []).append(cmd)
+        return self._parse_color(color)
 
+    @processing_function
     def fill(self, color):
-        r, g, b = self._parse_color(color)
-        cmd = {'name': 'fill', 'args': [r, g, b]}
-        self.frame.setdefault('commands', []).append(cmd)
+        return self._parse_color(color)
 
+    @processing_function
     def stroke(self, color):
-        r, g, b = self._parse_color(color)
-        cmd = {'name': 'stroke', 'args': [r, g, b]}
-        self.frame.setdefault('commands', []).append(cmd)
+        return self._parse_color(color)
 
+    @processing_function
     def rect(self, x, y, width, height):
-        cmd = {'name': 'rect', 'args': [x, y, width, height]}
-        self.frame.setdefault('commands', []).append(cmd)
+        return [x, y, width, height]
 
     def _parse_color(self, color):
         try:
@@ -79,6 +90,12 @@ class Sketch(object):
             r, g, b = [color]*3
         return r, g, b
 
+    @property
+    def processing_functions(self):
+        for member_name in dir(self):
+            obj = getattr(self, member_name)
+            if hasattr(obj, 'processing_name'):
+                yield obj
 
     @property
     def frame(self):
