@@ -6,6 +6,15 @@ from .server import SketchProcess, SketchServer
 
 
 def processing_function(func):
+    """Decorator for turning Sketch methods into Processing functions.
+
+    Marks the function it's decorating as a processing function by camel casing
+    the name of the function (to follow Processing naming conventions) and
+    attaching the new name to the function object as 'processing_name'.
+
+    It also DRY's up the code a bit by creating the command dict from the result
+    of calling the wrapped function and appends it to the Sketch object's frame.
+    """
     # Camel case the name to match the Processing naming conventions
     processing_name = ''.join(func.__name__.split('_')[:1] + [s.capitalize() for s in func.__name__.split('_')[1:]])
 
