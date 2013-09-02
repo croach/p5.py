@@ -24,6 +24,17 @@ def size(width, height):
     __builtin__.width = _sketch.width = width
     __builtin__.height = _sketch.height = height
 
+# TODO: Make sure this matches the one in Processing
+def constrain(amt, low, high):
+    """Constrains a value to not exceed a maximum and minimum value.
+    """
+    if amt < low:
+        return low
+    elif amt > high:
+        return high
+    else:
+        return amt
+
 
 def _bind(fn, obj):
     """Turns a function into a bound method and adds it to the given object.
