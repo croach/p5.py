@@ -3,6 +3,7 @@ from multiprocessing import Process
 import webbrowser
 
 from .server import SketchProcess, SketchServer
+from .utils import processing_func_name
 
 
 def processing_function(func):
@@ -16,7 +17,7 @@ def processing_function(func):
     of calling the wrapped function and appends it to the Sketch object's frame.
     """
     # Camel case the name to match the Processing naming conventions
-    processing_name = ''.join(func.__name__.split('_')[:1] + [s.capitalize() for s in func.__name__.split('_')[1:]])
+    processing_name = processing_func_name(func.__name__)
 
     # Create a wrapper function that gets the returned args from the real
     # function and creates a new command dict and adds it to the frame queue.

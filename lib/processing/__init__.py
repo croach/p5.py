@@ -1,8 +1,9 @@
 import types
 from functools import wraps
 
-from .sketch import Sketch
-from .utils import *
+from . import mathfuncs
+from .sketch import Sketch, processing_func_name
+from .utils import processing_func_name
 
 
 # TODO: Add an __all__ variable to make sure everything doesn't get imported
@@ -14,12 +15,6 @@ __builtin__.width = 100
 __builtin__.height = 100
 
 _sketch = Sketch()
-
-# Add the processing functions to the current module
-self = __import__(__name__)
-for func in _sketch.processing_functions:
-    setattr(self, func.processing_name, func)
-
 
 def size(width, height):
     __builtin__.width = _sketch.width = width
@@ -48,3 +43,14 @@ def run():
         _bind(__main__.draw, _sketch)
 
     _sketch.run()
+
+
+# Add the processing functions to the current module
+self = __import__(__name__)
+for func in _sketch.processing_functions:
+    setattr(self, func.processing_name, func)
+
+for func_name in filter(lambda s: not s.startswith('_'), dir(mathfuncs)):
+    func = getattr(mathfuncs, func_name)
+    processing_func_name = ''.join(func_name.split('_')[:1] + [s.capitalize() for s in func_name.split('_')[1:]])
+    setattr(self, processing_func_name, func)
