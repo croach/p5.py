@@ -28,6 +28,18 @@ def random(*args):
     offset = _random.random() * (high - low)
     return low + offset
 
+def random_gaussian():
+    """Returns a float from a random series of numbers.
+
+    Each time the randomGaussian() function is called, it returns a number
+    fitting a Gaussian, or normal, distribution having a mean of 0 and a
+    standard deviation of 1. There is theoretically no minimum or maximum value
+    that randomGaussian() might return. Rather, there is just a very low
+    probability that values far from the mean will be returned; and a higher
+    probability that numbers near the mean will be returned.
+    """
+    return _random.gauss(0, 1)
+
 def random_seed(seed):
     """Sets the seed value for random().
 
