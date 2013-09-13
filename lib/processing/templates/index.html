@@ -25,44 +25,77 @@
             return $("canvas")[0];
         }
 
-        function color(r, g, b) {
-            return r.toString(16) + g.toString(16) + b.toString(16);
+        function color(r, g, b, a) {
+            var colorString = r + ", "+  g + ", " + b;
+            if (a !== undefined) {
+                colorString = "rgba(" + colorString + ", " + a/255 + ")";
+            } else {
+                colorString = "rgb(" + colorString + ")";
+            }
+            return colorString;
         }
 
         var processingFns = {
-            "point": function(x, y) {
+
+            point: function(x, y) {
                 var ctx = this.getContext("2d");
                 ctx.fillRect(x, y, 1, 1);
             },
 
-            "background": function(r, g, b) {
+            background: function(r, g, b, a) {
                 var ctx = this.getContext("2d"),
                     prevFillStyle = ctx.fillStyle;
-                ctx.fillStyle = color(r, g, b);
+                ctx.fillStyle = color(r, g, b, a);
                 ctx.fillRect(0, 0, this.width, this.height);
                 ctx.fillStyle = prevFillStyle;
             },
 
-            "fill": function(r, g, b) {
+            fill: function(r, g, b, a) {
                 var ctx = this.getContext("2d");
-                ctx.fillStyle = color(r, g, b);
+                ctx.fillStyle = color(r, g, b, a);
             },
 
-            "stroke": function(r, g, b) {
+            stroke: function(r, g, b, a) {
                 var ctx = this.getContext("2d");
-                ctx.strokeStyle = color(r, g, b);
+                ctx.strokeStyle = color(r, g, b, a);
             },
 
-            "strokeWeight": function(weight) {
+            noStroke: function() {
+                var ctx = this.getContext("2d");
+                ctx.strokeStyle = color(0, 0, 0, 0);
+            },
+
+            strokeWeight: function(weight) {
                 var ctx = this.getContext("2d");
                 ctx.lineWidth = weight;
             },
 
-            "rect": function(x, y, width, height) {
+            rect: function(x, y, width, height) {
                 var ctx = this.getContext("2d");
 		        ctx.strokeRect(x, y, width, height);
                 ctx.fillRect(x, y, width, height);
             },
+
+            ellipse: function(x, y, width, height) {
+                var ctx = this.getContext("2d");
+                ctx.beginPath();
+
+                // TODO: take ellipse mode into account when drawing the ellipse
+                // Ellipse modes: CENTER (default), RADIUS, CORNER, CORNERS
+
+                if (width === height) {
+                    ctx.arc(x, y, width / 2, 0, 6.283185307179586, false);
+                } else {
+                    // TODO: oval code
+                }
+
+                ctx.fill();
+            },
+
+            _ellipseMode: "CENTER",
+            ellipseMode: function(mode) {
+                _ellipseMode = mode;
+            }
 
         };
 

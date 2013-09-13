@@ -78,16 +78,20 @@ class Sketch(object):
         return [x, y]
 
     @processing_function
-    def background(self, color):
-        return self._parse_color(color)
+    def background(self, *args):
+        return self._parse_color(*args)
 
     @processing_function
-    def fill(self, color):
-        return self._parse_color(color)
+    def fill(self, *args):
+        return self._parse_color(*args)
 
     @processing_function
-    def stroke(self, color):
-        return self._parse_color(color)
+    def stroke(self, *args):
+        return self._parse_color(*args)
+
+    @processing_function
+    def no_stroke(self):
+        return self._parse_color(0, 0)
 
     @processing_function
     def stroke_weight(self, weight):
@@ -97,12 +101,18 @@ class Sketch(object):
     def rect(self, x, y, width, height):
         return [x, y, width, height]
 
-    def _parse_color(self, color):
-        try:
-            r, g, b = color
-        except TypeError:
-            r, g, b = [color]*3
-        return r, g, b
+    @processing_function
+    def ellipse(self, x, y, width, height):
+        return [x, y, width, height]
+
+    def _parse_color(self, *args):
+        if len(args) == 1:
+            color = [args[0]]*3
+        elif len(args) == 2:
+            color = [args[0]]*3 + [args[1]]
+        else:
+            color = args
+        return color
 
     @property
     def processing_functions(self):
