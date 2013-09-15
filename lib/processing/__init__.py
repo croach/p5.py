@@ -2,6 +2,7 @@ import types
 from functools import wraps
 
 from . import mathfuncs
+from .pvector import PVector
 from .sketch import Sketch, processing_func_name
 from .utils import processing_func_name
 
