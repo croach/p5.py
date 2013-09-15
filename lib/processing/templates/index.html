@@ -19,10 +19,19 @@
         var ws = new WebSocket("ws://localhost:{{ port }}/ws");
 
         function getCanvas(w, h) {
-            if ($("canvas").length === 0) {
+            var canvas = $("canvas")[0];
+            if (typeof canvas === "undefined") {
+                // Create a new canvas element if one doesn't already exist
                 $("body").append('<canvas width="' + w + 'px" height="' + h + 'px">');
+                canvas = $("canvas")[0];
+
+                // Initialize the canvas element's defaults
+                processingFns["stroke"].apply(canvas, [0, 0, 0]);
+                processingFns["strokeWeight"].apply(canvas, [1]);
+                processingFns["fill"].apply(canvas, [255, 255, 255]);
+                processingFns["background"].apply(canvas, [230, 230, 230]);
             }
-            return $("canvas")[0];
+            return canvas;
         }
 
         function color(r, g, b, a) {
@@ -70,6 +79,31 @@
                 ctx.lineWidth = weight;
             },
 
+            line: function(x1, y1, x2, y2) {
+                var ctx = this.getContext("2d");
+
+                // Save the current state since we may have to change the line
+                // width to make it match how line acts in Processing
+                ctx.save();
+                if (x1 === x2) {         // vertical line
+                    x1 -= 0.5;
+                    x2 -= 0.5;
+                } else if (y1 === y2) {  // horizontal line
+                    y1 -= 0.5;
+                    y2 -= 0.5;
+                }
+                else if (ctx.lineWidth % 2 === 1) {
+                    ctx.lineWidth += 0.5;
+                }
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+
+                // After drawing the line, restore the previous state
+                ctx.restore();
+            },
+
             rect: function(x, y, width, height) {
                 var ctx = this.getContext("2d");
 		        ctx.strokeRect(x, y, width, height);
@@ -89,6 +123,7 @@
                     // TODO: oval code
                 }
 
+                ctx.stroke();
                 ctx.fill();
             },
 

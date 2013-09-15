@@ -98,6 +98,10 @@ class Sketch(object):
         return [weight]
 
     @processing_function
+    def line(self, x1, y1, x2, y2):
+        return [x1, y1, x2, y2]
+
+    @processing_function
     def rect(self, x, y, width, height):
         return [x, y, width, height]
 
