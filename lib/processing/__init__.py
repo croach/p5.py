@@ -3,7 +3,7 @@ from functools import wraps
 
 from . import mathfuncs
 from .pvector import PVector
-from .sketch import Sketch, processing_func_name
+from .sketch import Sketch
 from .utils import processing_func_name
 
 
@@ -60,12 +60,12 @@ for func in _sketch.processing_functions:
 
 for func_name in filter(lambda s: not s.startswith('_'), dir(mathfuncs)):
     func = getattr(mathfuncs, func_name)
-    processing_func_name = ''.join(func_name.split('_')[:1] + [s.capitalize() for s in func_name.split('_')[1:]])
+    processing_name = processing_func_name(func_name)
 
     # if the new function's name matches a builtin one, add a preceding
     # underscore to the builtin functions name so we don't overwrite it.
-    if processing_func_name in dir(__builtin__):
-        builtin_func = getattr(__builtin__, processing_func_name)
-        setattr(__builtin__, '_%s' % processing_func_name, builtin_func)
+    if processing_name in dir(__builtin__):
+        builtin_func = getattr(__builtin__, processing_name)
+        setattr(__builtin__, '_%s' % processing_name, builtin_func)
 
-    setattr(self, processing_func_name, func)
+    setattr(self, processing_name, func)
