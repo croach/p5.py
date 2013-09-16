@@ -22,6 +22,7 @@ def random(*args):
 
     Returns:
     float
+
     """
     low = args[0] if len(args) > 1 else 0
     high = args[1] if len(args) > 1 else args[0]
@@ -37,6 +38,7 @@ def random_gaussian():
     that randomGaussian() might return. Rather, there is just a very low
     probability that values far from the mean will be returned; and a higher
     probability that numbers near the mean will be returned.
+
     """
     return _random.gauss(0, 1)
 
@@ -49,6 +51,7 @@ def random_seed(seed):
 
     Arguments:
     seed -- seed value
+
     """
     _random.seed(seed)
 
