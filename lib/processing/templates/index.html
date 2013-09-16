@@ -127,19 +127,28 @@
 
             ellipse: function(x, y, width, height) {
                 var ctx = this.getContext("2d");
+
+                // TODO: Why do I need to double the line width for arcs?
+                // Save the current state since we double the line width when
+                // drawing ellipses but not for regular lines.
+                ctx.save()
+
+                ctx.lineWidth = ctx.lineWidth * 2;
                 ctx.beginPath();
 
                 // TODO: take ellipse mode into account when drawing the ellipse
                 // Ellipse modes: CENTER (default), RADIUS, CORNER, CORNERS
 
                 if (width === height) {
-                    ctx.arc(x, y, width / 2, 0, 6.283185307179586, false);
+                    ctx.arc(x, y, width / 2, 0, 2*Math.PI, false);
                 } else {
                     // TODO: oval code
                 }
 
                 ctx.stroke();
                 ctx.fill();
+
+                ctx.restore();
             },
 
             _ellipseMode: "CENTER",
