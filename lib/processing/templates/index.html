@@ -52,11 +52,11 @@
             },
 
             background: function(r, g, b, a) {
-                var ctx = this.getContext("2d"),
-                    prevFillStyle = ctx.fillStyle;
+                var ctx = this.getContext("2d");
+                ctx.save();
                 ctx.fillStyle = color(r, g, b, a);
                 ctx.fillRect(0, 0, this.width, this.height);
-                ctx.fillStyle = prevFillStyle;
+                ctx.restore();
             },
 
             fill: function(r, g, b, a) {
