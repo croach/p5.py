@@ -7,14 +7,14 @@ class PVector(object):
 
 
     def add(self, *args):
-        x, y, z = args[0].x, args[0].y, args[0].z if len(args) == 1 else args
+        x, y, z = (args[0].x, args[0].y, args[0].z) if len(args) == 1 else args
         self.x += x
         self.y += y
         self.z += z
 
 
     def sub(self, *args):
-        x, y, z = args[0].x, args[0].y, args[0].z if len(args) == 1 else args
+        x, y, z = (args[0].x, args[0].y, args[0].z) if len(args) == 1 else args
         self.x -= x
         self.y -= y
         self.z -= z
