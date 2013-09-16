@@ -10,16 +10,23 @@ from .utils import processing_func_name
 # TODO: Add an __all__ variable to make sure everything doesn't get imported
 #       when the user does an import *
 
+_sketch = Sketch()
+
 # Adding global variables to the __builtin__ module
 import __builtin__
-__builtin__.width = 100
-__builtin__.height = 100
+__builtin__.width = _sketch.width
+__builtin__.height = _sketch.height
+# TODO: is there a way to have a frameRate function and variable on __builtin__?
+__builtin__.frame_rate = _sketch.frame_rate
 
-_sketch = Sketch()
 
 def size(width, height):
     __builtin__.width = _sketch.width = width
     __builtin__.height = _sketch.height = height
+
+
+def frameRate(frame_rate):
+    __builtin__.frameRate = _sketch.frame_rate = frame_rate
 
 
 def _bind(fn, obj):
