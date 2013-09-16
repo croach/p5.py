@@ -85,16 +85,31 @@
                 // Save the current state since we may have to change the line
                 // width to make it match how line acts in Processing
                 ctx.save();
-                if (x1 === x2) {         // vertical line
-                    x1 -= 0.5;
-                    x2 -= 0.5;
-                } else if (y1 === y2) {  // horizontal line
-                    y1 -= 0.5;
-                    y2 -= 0.5;
-                }
-                else if (ctx.lineWidth % 2 === 1) {
+
+                // The following bit of code gives us nice, crisp 1 pixel lines
+                if (x1 === x2) {                             // vertical line
+                    if (x1 === Math.floor(x1)) {
+                        x1 = x2 = x1 - 0.5;
+                    } else if (x1 < Math.floor(x1) + 0.5) {
+                        x1 = x2 = Math.floor(x1) - 0.5;
+                    } else {
+                        x1 = x2 = Math.ceil(x1) - 0.5;
+                    }
+                    console.log(x1);
+                } else if (y1 === y2) {                      // horizontal line
+                    if (y1 === Math.floor(y1)) {
+                        y1 = y2 = y1 - 0.5;
+                    } else if (y1 < Math.floor(y1) + 0.5) {
+                        y1 = y2 = Math.floor(y1) - 0.5;
+                    } else {
+                        y1 = y2 = Math.ceil(y1) - 0.5;
+                    }
+                    console.log(y1);
+                // TODO: not quite sure why I need to add 0.5 to an odd sized diagonal line
+                } else if (ctx.lineWidth % 2 === 1) {        // diagonal line
                     ctx.lineWidth += 0.5;
                 }
+
                 ctx.beginPath();
                 ctx.moveTo(x1, y1);
                 ctx.lineTo(x2, y2);
