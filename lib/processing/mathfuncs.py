@@ -63,3 +63,8 @@ def constrain(amt, low, high):
         return high
     else:
         return amt
+
+def map(value, start1, stop1, start2, stop2):
+    """Re-maps a number from one range to another.
+    """
+    return (value - start1) / float(stop1 - start1) * (stop2 - start2) + start2
