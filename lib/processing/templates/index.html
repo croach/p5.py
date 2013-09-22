@@ -48,7 +48,15 @@
 
             point: function(x, y) {
                 var ctx = this.getContext("2d");
+                // Processing uses stroke to define the color for its points.
+                // Unfortunately, strokeRect is too big for a point, so the code
+                // below steels the stroke style and uses it to set the fill
+                // style temporarily so it can use fillRect to draw the point.
+                ctx.save();
+                ctx.fillStyle = ctx.strokeStyle;
                 ctx.fillRect(x, y, 1, 1);
+                console.log(ctx['webkitImageSmoothingEnabled']);
+                ctx.restore();
             },
 
             background: function(r, g, b, a) {
