@@ -2,7 +2,6 @@ from functools import wraps
 from multiprocessing import Process
 import webbrowser
 
-from .server import SketchProcess, SketchServer
 from .utils import processing_func_name
 
 
@@ -45,24 +44,9 @@ class Sketch(object):
     def draw(self):
         pass
 
-    def run(self, port=8000):
-        worker = Process(target=SketchProcess(self))
-        server = Process(target=SketchServer(port))
-        worker.start()
-        server.start()
-        url = 'http://localhost:%d' % port
-        webbrowser.open(url)
-        print 'Visualialization available on %s' % url
-        print "Press ctrl-c to exit..."
-        try:
-            worker.join()
-            server.join()
-        except KeyboardInterrupt:
-            worker.terminate()
-            server.terminate()
-
     def __init__(self):
         self.reset()
+        self.setup()
 
     def reset(self):
         """Resets the state of the system (i.e., the current frame dict).

@@ -1,16 +1,12 @@
 import os
+import inspect
 import json
-import time
-
-import zmq
-from zmq.eventloop import ioloop
-from zmq.eventloop.zmqstream import ZMQStream
-
-ioloop.install()
+import signal
+import webbrowser
 
 import tornado.web
 import tornado.websocket
-import tornado.ioloop
+from tornado import ioloop
 
 
 # TODO: once this is made into a pip installable package, this will need to be
@@ -19,108 +15,98 @@ root = os.path.dirname(__file__)
 
 TEMPLATE_DIR = os.path.join(root, 'templates')
 
-ZMQ_PORT = 5556
-
-
-class SketchProcess(object):
-    """Worker process that runs a sketch.
-
-    This is a stand alone worker (system) process that wraps a Sketch instance
-    and is essentially a discrete event loop. It loops until the sketch instance
-    tells it to stop, or it is interrupted by the main process and calls the
-    draw method on the sketch to produce the visualization data for the current
-    time step. It then sends the data for the current time step to the message
-    handler to be dispatched to all of the attached clients.
-    """
-    def __init__(self, sketch):
-        self.sketch = sketch
-
-    def __call__(self):
-        context = zmq.Context()
-        socket = context.socket(zmq.PUB)
-        socket.bind('tcp://*:%s' % ZMQ_PORT)
-        self.sketch.setup()
-        # TODO: Currently I sleep for a second before starting the simulation
-        #       that way the browser window (hopefully) has enough time to open
-        #       before the simulation is underway. In the future it would be
-        #       better to not start the simulation until at least one client
-        #       has connected.
-        time.sleep(1)
-        while True:
-            # TODO: Consider doing something where draw actually returnst the
-            #       frame and resets it so we don't have to call reset below.
-            self.sketch.draw()
-            socket.send(json.dumps(self.sketch.frame))
-            self.sketch.reset()
-            time.sleep(1.0/self.sketch.frame_rate)
-
-
-class SketchMessageHandler(object):
-    """Intermediary message handler for a discrete event simulation.
-
-    SketchMessageHandler acts a bit like a chat server. It has a simple API
-    through which callback functions can be registered. It then listens for
-    new messages from the sketch process(es) and relays the new data to each
-    of the clients through the registered callback functions.
-    """
-    def __init__(self):
-        self.callbacks = []
-
-        context = zmq.Context()
-        socket = context.socket(zmq.SUB)
-        socket.connect('tcp://localhost:%s' % ZMQ_PORT)
-        socket.setsockopt(zmq.SUBSCRIBE, '')
-        stream = ZMQStream(socket)
-        stream.on_recv(self.message_received)
-
-    def message_received(self, message):
-        for callback in self.callbacks:
-            callback(message[0])
-
-    def register(self, callback):
-        self.callbacks.append(callback)
-
-    def unregister(self, callback):
-        self.callbacks.remove(callback)
-
 
 class MainHandler(tornado.web.RequestHandler):
-    """Serves the main page (index.html).
+    """Handles new HTTP requests (i.e., it serves the main page (index.html)).
     """
     def get(self):
         self.render('index.html', port=self.application.port)
 
 
 class WebsocketHandler(tornado.websocket.WebSocketHandler):
-    """Handles websocket connections.
+    """Handles new websocket connection requests.
     """
     def open(self):
         print 'new connection'
-        self.application.message_handler.register(self.callback)
+        # self.application.message_handler.register(self.callback)
+        # self.application.websockets.append(self)
+        self.application.add_connection(self)
 
     def on_close(self):
-        self.application.message_handler.unregister(self.callback)
+        # self.application.message_handler.unregister(self.callback)
+        # self.application.websockets.remove(self)
+        self.application.remove_connection(self)
         print 'connection closed'
 
     def on_message(self, message):
         print 'message received', message
 
-    def callback(self, message):
-        """Callback function registered with the sketch message handler.
-        """
-        self.write_message(message)
+
+class ConnectionHandler(ioloop.PeriodicCallback):
+    """Handles all communication between a sketch and its client(s).
+
+    This class inherits from the Tornado's PeriodicCallback class and is
+    scheduled to run periodically (according to the given sketch's frame rate)
+    on the main IO Loop instance. At each time step, the step method is called
+    which is responsible for advancing the current frame of the sketch object
+    and sending the frame information to the client(s).
+
+    TODO: add some comments on receiving communication from the client.
+
+    """
+    def __init__(self, sketch, connection=None):
+        self.sketch = sketch
+        self.sketch.setup()
+        # TODO: Once issue #11 is resolved, there will no longer be a need for
+        # multiple connections. A ConnectionHandler instance will instead be
+        # created for every new connection. So, the connections attribute below
+        # can be changed to a single connection attribute and the add_connection
+        # and remove_connection methods can be removed. Also, the loop in step
+        # can be removed and replace with a single write.
+        self.connections = []
+        if connection is not None:
+            self.connections.append(connection)
+        super(ConnectionHandler, self).__init__(self.step, 1000.0/self.sketch.frame_rate)
+
+    def step(self):
+        self.sketch.draw()
+        message = json.dumps(self.sketch.frame)
+        for connection in self.connections:
+            connection.write_message(message)
+        self.sketch.reset()
+
+    def add_connection(self, connection):
+        self.connections.append(connection)
+
+    def remove_connection(self, connection):
+        self.connections.remove(connection)
 
 
 class SketchApplication(tornado.web.Application):
-    """Tornado app that handles all communication with the client(s) (browser).
+    """Wraps a Sketch and handles all communication with the client(s).
 
-    The main reason for a custom application is to give each of the websocket
-    handler instances access to the SketchMessageHandler instance so they can
-    register their callback methods with it.
+    This Tornado app ties together the MainHandler instance (responsible for
+    handling all new browser connections), and the WebSocketHandler instance
+    (responsible for handling all new websocket connections).
+
+    It takes a Sketch class and an optional port number, the latter of which it
+    listens on for new HTTP connection requests. When a new connection is
+    initiated, it creates an instance of the given Sketch class and starts a
+    ConnectionHandler that is responsible for stepping the sketch object through
+    each frame and returning the inforamtion to the client.
+
     """
-    def __init__(self, port):
+
+    def __init__(self, sketch_class_or_instance, port=8000):
         self.port = port
-        self.message_handler = SketchMessageHandler()
+        self.sketch_class_or_instance = sketch_class_or_instance
+        self.connection_handlers = {}
+        if not inspect.isclass(self.sketch_class_or_instance):
+            handler = ConnectionHandler(self.sketch_class_or_instance)
+            handler.start()
+            self.connection_handlers[hash(handler)] = handler
+
+
         handlers = [
             (r'/ws', WebsocketHandler),
             (r'/', MainHandler)
@@ -130,18 +116,59 @@ class SketchApplication(tornado.web.Application):
         }
         super(SketchApplication, self).__init__(handlers, **settings)
 
+    def run(self):
+        """Runs the sketch application.
 
-class SketchServer(object):
-    """A tornado based web and websocket server for the sketch.
+        This method starts up the Tornado HTTP and websocket servers. It also
+        open the user's browser to sketch's URL and sets up a signal handler to
+        capture Ctrl-C events to shutdown the applcation. Finally it starts the
+        IO Loop.
 
-    The SketchServer is a tornado based web server that handles all
-    communication with the client (the browser). It essentially wraps into
-    one bundle instances of the websocket, index, and sketch message handlers.
-    """
-    def __init__(self, port):
-        self.port = port
+        """
+        # Start listening for new browser connections
+        self.listen(self.port)
 
-    def __call__(self):
-        application = SketchApplication(self.port)
-        application.listen(self.port)
-        tornado.ioloop.IOLoop.instance().start()
+        url = 'http://localhost:%d' % self.port
+        webbrowser.open(url)
+        print 'Visualialization available on %s' % url
+        print "Press ctrl-c to exit..."
+
+        # TODO: Look into using IOLoop.add_callback_from_signal to capture
+        #       the Ctrl-c (signal.SIGINT) signal and exit gracefully.
+        def sig_handler(sig, frame):
+            ioloop.IOLoop.instance().add_callback_from_signal(self.shutdown)
+        signal.signal(signal.SIGINT, sig_handler)
+
+        ioloop.IOLoop.instance().start()
+
+    def add_connection(self, connection):
+        if inspect.isclass(self.sketch_class_or_instance):
+            handler = ConnectionHandler(self.sketch_class_or_instance(), connection)
+            handler.start()
+            self.connection_handlers[hash(connection)] = handler
+        else:
+            self.connection_handlers.values()[0].add_connection(connection)
+
+    def remove_connection(self, connection):
+        if inspect.isclass(self.sketch_class_or_instance):
+            handler = self.connection_handlers.pop(hash(connection))
+            handler.stop()
+        else:
+            self.connection_handlers.values()[0].remove_connection(connection)
+
+    def shutdown(self):
+        """Shuts down the application.
+
+        Stops all active connection handlers and the Tornado IO Loop.
+
+        """
+        print "\nStopping all active connections..."
+        while True:
+            try:
+                _, connection_handler = self.connection_handlers.popitem()
+                connection_handler.stop()
+            except KeyError:
+                break
+
+        print "Shutting down the Server..."
+        ioloop.IOLoop.instance().stop()
