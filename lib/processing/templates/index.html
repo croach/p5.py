@@ -30,6 +30,16 @@
                 processingFns["strokeWeight"].apply(canvas, [1]);
                 processingFns["fill"].apply(canvas, [255, 255, 255]);
                 processingFns["background"].apply(canvas, [230, 230, 230]);
+
+                // Add event listeners
+                canvas.addEventListener('mousemove', function(evt) {
+                    var rect = canvas.getBoundingClientRect();
+                    var mousePosition = {
+                        mouseX: evt.clientX - rect.left,
+                        mouseY: evt.clientY - rect.top
+                    };
+                    ws.send(JSON.stringify(mousePosition));
+                });
             }
             return canvas;
         }

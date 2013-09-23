@@ -26,20 +26,27 @@ class MainHandler(tornado.web.RequestHandler):
 class WebsocketHandler(tornado.websocket.WebSocketHandler):
     """Handles new websocket connection requests.
     """
+    def __init__(self, *args, **kwargs):
+        super(WebsocketHandler, self).__init__(*args, **kwargs)
+        self.message_handlers = []
+
     def open(self):
         print 'new connection'
-        # self.application.message_handler.register(self.callback)
-        # self.application.websockets.append(self)
         self.application.add_connection(self)
 
     def on_close(self):
-        # self.application.message_handler.unregister(self.callback)
-        # self.application.websockets.remove(self)
         self.application.remove_connection(self)
         print 'connection closed'
 
     def on_message(self, message):
-        print 'message received', message
+        for handler in self.message_handlers:
+            handler(message)
+
+    def add_message_handler(self, callback):
+        self.message_handlers.append(callback)
+
+    def remove_message_handler(self, callback):
+        self.message_handlers.remove(callback)
 
 
 class ConnectionHandler(ioloop.PeriodicCallback):
@@ -65,6 +72,7 @@ class ConnectionHandler(ioloop.PeriodicCallback):
         # can be removed and replace with a single write.
         self.connections = []
         if connection is not None:
+            connection.add_message_handler(self.handle_message)
             self.connections.append(connection)
         super(ConnectionHandler, self).__init__(self.step, 1000.0/self.sketch.frame_rate)
 
@@ -76,10 +84,16 @@ class ConnectionHandler(ioloop.PeriodicCallback):
         self.sketch.reset()
 
     def add_connection(self, connection):
+        connection.add_message_handler(self.handle_message)
         self.connections.append(connection)
 
     def remove_connection(self, connection):
         self.connections.remove(connection)
+
+    def handle_message(self, message):
+        data = json.loads(message)
+        for key, value in data.items():
+            setattr(self.sketch, key, value)
 
 
 class SketchApplication(tornado.web.Application):

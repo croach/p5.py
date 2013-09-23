@@ -1,3 +1,5 @@
+import __builtin__
+
 import types
 from functools import wraps
 
@@ -11,14 +13,37 @@ from .utils import processing_func_name
 # TODO: Add an __all__ variable to make sure everything doesn't get imported
 #       when the user does an import *
 
-_sketch = Sketch()
+
+class SingletonSketch(Sketch):
+
+    _mouseX = 0
+    _mouseY = 0
+
+    def get_mouseX(self):
+        return self._mouseX
+    def set_mouseX(self, mouseX):
+        self._mouseX = mouseX
+        __builtin__.mouseX = mouseX
+    mouseX = property(get_mouseX, set_mouseX)
+
+    def get_mouseY(self):
+        return self._mouseY
+    def set_mouseY(self, mouseY):
+        self._mouseY = mouseY
+        __builtin__.mouseY = mouseY
+    mouseY = property(get_mouseY, set_mouseY)
+
+
+
+_sketch = SingletonSketch()
 
 # Adding global variables to the __builtin__ module
-import __builtin__
 __builtin__.width = _sketch.width
 __builtin__.height = _sketch.height
 # TODO: is there a way to have a frameRate function and variable on __builtin__?
 __builtin__.frame_rate = _sketch.frame_rate
+__builtin__.mouseX = _sketch.mouseX
+__builtin__.mouseY = _sketch.mouseY
 
 
 def size(width, height):
