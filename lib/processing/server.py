@@ -1,4 +1,5 @@
 import os
+import inspect
 import json
 import signal
 import webbrowser
@@ -42,26 +43,43 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
 
 class ConnectionHandler(ioloop.PeriodicCallback):
-    """Handles all communication for a single websocket connection.
+    """Handles all communication between a sketch and its client(s).
 
     This class inherits from the Tornado's PeriodicCallback class and is
     scheduled to run periodically (according to the given sketch's frame rate)
     on the main IO Loop instance. At each time step, the step method is called
     which is responsible for advancing the current frame of the sketch object
-    and sending the frame information to the client.
+    and sending the frame information to the client(s).
 
     TODO: add some comments on receiving communication from the client.
 
     """
-    def __init__(self, connection, sketch):
-        self.connection = connection
+    def __init__(self, sketch, connection=None):
         self.sketch = sketch
+        self.sketch.setup()
+        # TODO: Once issue #11 is resolved, there will no longer be a need for
+        # multiple connections. A ConnectionHandler instance will instead be
+        # created for every new connection. So, the connections attribute below
+        # can be changed to a single connection attribute and the add_connection
+        # and remove_connection methods can be removed. Also, the loop in step
+        # can be removed and replace with a single write.
+        self.connections = []
+        if connection is not None:
+            self.connections.append(connection)
         super(ConnectionHandler, self).__init__(self.step, 1000.0/self.sketch.frame_rate)
 
     def step(self):
         self.sketch.draw()
-        self.connection.write_message(json.dumps(self.sketch.frame))
+        message = json.dumps(self.sketch.frame)
+        for connection in self.connections:
+            connection.write_message(message)
         self.sketch.reset()
+
+    def add_connection(self, connection):
+        self.connections.append(connection)
+
+    def remove_connection(self, connection):
+        self.connections.remove(connection)
 
 
 class SketchApplication(tornado.web.Application):
@@ -79,10 +97,16 @@ class SketchApplication(tornado.web.Application):
 
     """
 
-    def __init__(self, sketch_class, port=8000):
-        self.sketch_class = sketch_class
+    def __init__(self, sketch_class_or_instance, port=8000):
         self.port = port
+        self.sketch_class_or_instance = sketch_class_or_instance
         self.connection_handlers = {}
+        if not inspect.isclass(self.sketch_class_or_instance):
+            handler = ConnectionHandler(self.sketch_class_or_instance)
+            handler.start()
+            self.connection_handlers[hash(handler)] = handler
+
+
         handlers = [
             (r'/ws', WebsocketHandler),
             (r'/', MainHandler)
@@ -91,7 +115,6 @@ class SketchApplication(tornado.web.Application):
             "template_path": os.path.join(TEMPLATE_DIR)
         }
         super(SketchApplication, self).__init__(handlers, **settings)
-
 
     def run(self):
         """Runs the sketch application.
@@ -119,13 +142,19 @@ class SketchApplication(tornado.web.Application):
         ioloop.IOLoop.instance().start()
 
     def add_connection(self, connection):
-        handler = ConnectionHandler(connection, self.sketch_class())
-        handler.start()
-        self.connection_handlers[hash(connection)] = handler
+        if inspect.isclass(self.sketch_class_or_instance):
+            handler = ConnectionHandler(self.sketch_class_or_instance(), connection)
+            handler.start()
+            self.connection_handlers[hash(connection)] = handler
+        else:
+            self.connection_handlers.values()[0].add_connection(connection)
 
     def remove_connection(self, connection):
-        handler = self.connection_handlers.pop(hash(connection))
-        handler.stop()
+        if inspect.isclass(self.sketch_class_or_instance):
+            handler = self.connection_handlers.pop(hash(connection))
+            handler.stop()
+        else:
+            self.connection_handlers.values()[0].remove_connection(connection)
 
     def shutdown(self):
         """Shuts down the application.
@@ -143,5 +172,3 @@ class SketchApplication(tornado.web.Application):
 
         print "Shutting down the Server..."
         ioloop.IOLoop.instance().stop()
-
-

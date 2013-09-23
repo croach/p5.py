@@ -4,6 +4,7 @@ from functools import wraps
 from . import mathfuncs
 from .pvector import PVector
 from .sketch import Sketch
+from .server import SketchApplication
 from .utils import processing_func_name
 
 
@@ -50,7 +51,7 @@ def run():
     if 'draw' in main_globals:
         _bind(__main__.draw, _sketch)
 
-    _sketch.run()
+    SketchApplication(_sketch, port=8888).run()
 
 
 # Add the processing functions to the current module
