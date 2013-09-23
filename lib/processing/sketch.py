@@ -82,6 +82,10 @@ class Sketch(object):
         return [weight]
 
     @processing_function
+    def translate(self, x, y):
+        return [x, y]
+
+    @processing_function
     def line(self, x1, y1, x2, y2):
         return [x1, y1, x2, y2]
 
