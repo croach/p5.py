@@ -1,4 +1,5 @@
 import random as _random
+from math import sqrt
 
 from .perlin import noise, noiseSeed
 
@@ -75,6 +76,20 @@ def map(value, start1, stop1, start2, stop2):
     return (value - start1) / float(stop1 - start1) * (stop2 - start2) + start2
 
 
+def dist(*args):
+    """Returns the distance between two points (2D or 3D).
+    """
+    step = len(args)/2
+    return sqrt(sum((args[i] - args[i+step])**2 for i in range(step)))
+
+
+def sq(num):
+    """Returns the square of a number
+    """
+    return num**2
+
+
+
 # def noise(*args):
 #     """Returns the Perlin noise value at specified coordinates.
 
@@ -113,4 +128,3 @@ def map(value, start1, stop1, start2, stop2):
 #         return pnoise2(*args)
 #     if len(args) == 3:
 #         return pnoise3(*args)
-
