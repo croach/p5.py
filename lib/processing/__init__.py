@@ -18,6 +18,7 @@ class SingletonSketch(Sketch):
 
     _mouseX = 0
     _mouseY = 0
+    _mousePressed = False
 
     def get_mouseX(self):
         return self._mouseX
@@ -33,6 +34,12 @@ class SingletonSketch(Sketch):
         __builtin__.mouseY = mouseY
     mouseY = property(get_mouseY, set_mouseY)
 
+    def get_mousePressed(self):
+        return self._mousePressed
+    def set_mousePressed(self, mousePressed):
+        self._mousePressed = mousePressed
+        __builtin__.mousePressed = mousePressed
+    mousePressed = property(get_mousePressed, set_mousePressed)
 
 
 _sketch = SingletonSketch()
@@ -44,6 +51,7 @@ __builtin__.height = _sketch.height
 __builtin__.frame_rate = _sketch.frame_rate
 __builtin__.mouseX = _sketch.mouseX
 __builtin__.mouseY = _sketch.mouseY
+__builtin__.mousePressed = _sketch.mousePressed
 
 
 def size(width, height):

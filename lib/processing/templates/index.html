@@ -34,14 +34,30 @@
                 processingFns["fill"].apply(canvas, [255, 255, 255]);
                 processingFns["background"].apply(canvas, [230, 230, 230]);
 
+                var mouseState = {
+                    mouseX: 0,
+                    mouseY: 0,
+                    mousePressed: false
+                }
+
                 // Add event listeners
-                canvas.addEventListener('mousemove', function(evt) {
+                var updateMouseState = function(evt) {
                     var rect = canvas.getBoundingClientRect();
-                    var mousePosition = {
-                        mouseX: evt.clientX - rect.left,
-                        mouseY: evt.clientY - rect.top
-                    };
-                    ws.send(JSON.stringify(mousePosition));
+                    mouseState['mouseX'] = evt.clientX - rect.left;
+                    mouseState['mouseY'] = evt.clientY - rect.top;
+                    ws.send(JSON.stringify(mouseState));
+                };
+
+                canvas.addEventListener('mousemove', updateMouseState);
+
+                canvas.addEventListener('mousedown', function(evt) {
+                    mouseState['mousePressed'] = true;
+                    updateMouseState(evt);
+                });
+
+                canvas.addEventListener('mouseup', function(evt) {
+                    mouseState['mousePressed'] = false;
+                    updateMouseState(evt);
                 });
             }
             return canvas;
