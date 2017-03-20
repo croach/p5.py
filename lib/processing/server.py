@@ -134,9 +134,9 @@ class SketchApplication(tornado.web.Application):
         """Runs the sketch application.
 
         This method starts up the Tornado HTTP and websocket servers. It also
-        open the user's browser to sketch's URL and sets up a signal handler to
-        capture Ctrl-C events to shutdown the applcation. Finally it starts the
-        IO Loop.
+        open the user's browser to sketch's URL and sets up a signal handler
+        to capture Ctrl-C events to shutdown the applcation. Finally it starts
+        the IO Loop.
 
         """
         # Start listening for new browser connections

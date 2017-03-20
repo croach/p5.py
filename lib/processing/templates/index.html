@@ -206,10 +206,17 @@
                 canvas = getCanvas(data.canvas.width, data.canvas.height),
                 ctx = canvas.getContext("2d");
 
+            // Some context commands (e.g., the translate command) alter the
+            // context permanently. We want to make sure that each new draw
+            // cycle begins with a clean slate, so we save the current context
+            // before running the next set of commands, and restore it
+            // afterwards.
+            ctx.save();
             for (var i = 0; i < commands.length; i++) {
                 var command = commands[i];
                 processingFns[command.name].apply(canvas, command.args);
             };
+            ctx.restore();
         };
     });
     </script>
