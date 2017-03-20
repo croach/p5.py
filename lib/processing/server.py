@@ -103,11 +103,11 @@ class SketchApplication(tornado.web.Application):
     handling all new browser connections), and the WebSocketHandler instance
     (responsible for handling all new websocket connections).
 
-    It takes a Sketch class and an optional port number, the latter of which it
-    listens on for new HTTP connection requests. When a new connection is
+    It takes a Sketch class and an optional port number, the latter of which
+    it listens on for new HTTP connection requests. When a new connection is
     initiated, it creates an instance of the given Sketch class and starts a
-    ConnectionHandler that is responsible for stepping the sketch object through
-    each frame and returning the inforamtion to the client.
+    ConnectionHandler that is responsible for stepping the sketch object
+    through each frame and returning the inforamtion to the client.
 
     """
 
