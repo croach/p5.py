@@ -1,5 +1,6 @@
 import __builtin__
 
+import argparse
 import types
 from functools import wraps
 
@@ -78,13 +79,19 @@ def run():
     import __main__
     main_globals = dir(__main__)
 
+    # Define and parse the command line arguments
+    parser = argparse.ArgumentParser(description='Runs a p5.py script.')
+    parser.add_argument('--port', '-p', type=int, default=8000,
+                        help='port the p5 server is listening on')
+    args = parser.parse_args()
+
     # TODO: Replace this with something a bit more dynamic
     if 'setup' in main_globals:
         _bind(__main__.setup, _sketch)
     if 'draw' in main_globals:
         _bind(__main__.draw, _sketch)
 
-    SketchApplication(_sketch, port=8888).run()
+    SketchApplication(_sketch, port=args.port).run()
 
 
 # Add the processing functions to the current module
