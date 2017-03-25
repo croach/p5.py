@@ -31,12 +31,12 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         self.message_handlers = []
 
     def open(self):
-        print 'new connection'
+        print('new connection')
         self.application.add_connection(self)
 
     def on_close(self):
         self.application.remove_connection(self)
-        print 'connection closed'
+        print('connection closed')
 
     def on_message(self, message):
         for handler in self.message_handlers:
@@ -144,8 +144,8 @@ class SketchApplication(tornado.web.Application):
 
         url = 'http://localhost:%d' % self.port
         webbrowser.open(url)
-        print 'Visualialization available on %s' % url
-        print "Press ctrl-c to exit..."
+        print('Visualialization available on %s' % url)
+        print("Press ctrl-c to exit...")
 
         # TODO: Look into using IOLoop.add_callback_from_signal to capture
         #       the Ctrl-c (signal.SIGINT) signal and exit gracefully.
@@ -161,14 +161,14 @@ class SketchApplication(tornado.web.Application):
             handler.start()
             self.connection_handlers[hash(connection)] = handler
         else:
-            self.connection_handlers.values()[0].add_connection(connection)
+            list(self.connection_handlers.values())[0].add_connection(connection)
 
     def remove_connection(self, connection):
         if inspect.isclass(self.sketch_class_or_instance):
             handler = self.connection_handlers.pop(hash(connection))
             handler.stop()
         else:
-            self.connection_handlers.values()[0].remove_connection(connection)
+            list(self.connection_handlers.values())[0].remove_connection(connection)
 
     def shutdown(self):
         """Shuts down the application.
@@ -176,7 +176,7 @@ class SketchApplication(tornado.web.Application):
         Stops all active connection handlers and the Tornado IO Loop.
 
         """
-        print "\nStopping all active connections..."
+        print("\nStopping all active connections...")
         while True:
             try:
                 _, connection_handler = self.connection_handlers.popitem()
@@ -184,5 +184,5 @@ class SketchApplication(tornado.web.Application):
             except KeyError:
                 break
 
-        print "Shutting down the Server..."
+        print("Shutting down the Server...")
         ioloop.IOLoop.instance().stop()

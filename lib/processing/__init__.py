@@ -1,4 +1,4 @@
-import __builtin__
+import builtins
 
 import argparse
 import types
@@ -25,43 +25,43 @@ class SingletonSketch(Sketch):
         return self._mouseX
     def set_mouseX(self, mouseX):
         self._mouseX = mouseX
-        __builtin__.mouseX = mouseX
+        builtins.mouseX = mouseX
     mouseX = property(get_mouseX, set_mouseX)
 
     def get_mouseY(self):
         return self._mouseY
     def set_mouseY(self, mouseY):
         self._mouseY = mouseY
-        __builtin__.mouseY = mouseY
+        builtins.mouseY = mouseY
     mouseY = property(get_mouseY, set_mouseY)
 
     def get_mousePressed(self):
         return self._mousePressed
     def set_mousePressed(self, mousePressed):
         self._mousePressed = mousePressed
-        __builtin__.mousePressed = mousePressed
+        builtins.mousePressed = mousePressed
     mousePressed = property(get_mousePressed, set_mousePressed)
 
 
 _sketch = SingletonSketch()
 
-# Adding global variables to the __builtin__ module
-__builtin__.width = _sketch.width
-__builtin__.height = _sketch.height
-# TODO: is there a way to have a frameRate function and variable on __builtin__?
-__builtin__.frame_rate = _sketch.frame_rate
-__builtin__.mouseX = _sketch.mouseX
-__builtin__.mouseY = _sketch.mouseY
-__builtin__.mousePressed = _sketch.mousePressed
+# Adding global variables to the builtins module
+builtins.width = _sketch.width
+builtins.height = _sketch.height
+# TODO: is there a way to have a frameRate function and variable on builtins?
+builtins.frame_rate = _sketch.frame_rate
+builtins.mouseX = _sketch.mouseX
+builtins.mouseY = _sketch.mouseY
+builtins.mousePressed = _sketch.mousePressed
 
 
 def size(width, height):
-    __builtin__.width = _sketch.width = width
-    __builtin__.height = _sketch.height = height
+    builtins.width = _sketch.width = width
+    builtins.height = _sketch.height = height
 
 
 def frameRate(frame_rate):
-    __builtin__.frameRate = _sketch.frame_rate = frame_rate
+    builtins.frameRate = _sketch.frame_rate = frame_rate
 
 
 def _bind(fn, obj):
@@ -71,7 +71,7 @@ def _bind(fn, obj):
     def method(self, *args, **kwargs):
         return fn(*args, **kwargs)
 
-    bound_method = types.MethodType(method, obj, obj.__class__)
+    bound_method = types.MethodType(method, obj)
     setattr(obj, bound_method.__name__, bound_method)
 
 
@@ -99,14 +99,14 @@ self = __import__(__name__)
 for func in _sketch.processing_functions:
     setattr(self, func.processing_name, func)
 
-for func_name in filter(lambda s: not s.startswith('_'), dir(mathfuncs)):
+for func_name in [s for s in dir(mathfuncs) if not s.startswith('_')]:
     func = getattr(mathfuncs, func_name)
     processing_name = processing_func_name(func_name)
 
     # if the new function's name matches a builtin one, add a preceding
     # underscore to the builtin functions name so we don't overwrite it.
-    if processing_name in dir(__builtin__):
-        builtin_func = getattr(__builtin__, processing_name)
-        setattr(__builtin__, '_%s' % processing_name, builtin_func)
+    if processing_name in dir(builtins):
+        builtin_func = getattr(builtins, processing_name)
+        setattr(builtins, '_%s' % processing_name, builtin_func)
 
     setattr(self, processing_name, func)

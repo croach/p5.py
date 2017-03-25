@@ -26,7 +26,7 @@ perlin = None
 DEG_TO_RAD = math.pi/180.0;
 SINCOS_PRECISION = 0.5;
 SINCOS_LENGTH = int(360 / SINCOS_PRECISION)
-perlin_cos_table = [math.cos(i * DEG_TO_RAD * SINCOS_PRECISION) for i in xrange(SINCOS_LENGTH)]
+perlin_cos_table = [math.cos(i * DEG_TO_RAD * SINCOS_PRECISION) for i in range(SINCOS_LENGTH)]
 perlin_TWOPI = perlin_PI = SINCOS_LENGTH
 perlin_PI >>= 1;
 
@@ -44,7 +44,7 @@ def noise(*args):
         perlinRandom = Random()
 
     if perlin is None:
-        perlin = [perlinRandom.random() for i in xrange(PERLIN_SIZE + 1)]
+        perlin = [perlinRandom.random() for i in range(PERLIN_SIZE + 1)]
 
     x = abs(x)
     x = abs(x)

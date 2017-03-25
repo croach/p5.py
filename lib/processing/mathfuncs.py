@@ -73,13 +73,13 @@ def constrain(amt, low, high):
 def map(value, start1, stop1, start2, stop2):
     """Re-maps a number from one range to another.
     """
-    return (value - start1) / float(stop1 - start1) * (stop2 - start2) + start2
+    return (value - start1) / (stop1 - start1) * (stop2 - start2) + start2
 
 
 def dist(*args):
     """Returns the distance between two points (2D or 3D).
     """
-    step = len(args)/2
+    step = len(args) // 2
     return sqrt(sum((args[i] - args[i+step])**2 for i in range(step)))
 
 
