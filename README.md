@@ -16,7 +16,7 @@ folder to the `PYTHONPATH` variable with the following line. Note,
 this assumes that you are currently in the p5.py folder.
 
 ```bash
-$ export PYTHONPATH="$PYTHONPATH:$(pwd)/lib"
+$ export PYTHONPATH="$PYTHONPATH:$VIRTUAL_ENV/../lib"
 ```
 
 Once you have the `PYTHONPATH` setup properly, you can test that 
